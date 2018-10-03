@@ -2,7 +2,22 @@
 
 
 [[projects]]
-  digest = "1:0a152de447111708ad82dac6bddc7c87294937cdd70d608891ef6787549b1b07"
+  digest = "1:9ede7940cd19ac5d92896381abac71954feb57608b617152e48112c3dc667e87"
+  name = "github.com/asdine/storm"
+  packages = [
+    ".",
+    "codec",
+    "codec/json",
+    "index",
+    "internal",
+    "q",
+  ]
+  pruneopts = "UT"
+  revision = "bda68dab90fc908ee5dbccb36400edf4f54972d6"
+  version = "v2.1.1"
+
+[[projects]]
+  digest = "1:a3bcc898f453d7238c708ac468849796bdf6ca33fc540195a271fd7a3b360d2b"
   name = "github.com/astaxie/beego"
   packages = [
     ".",
@@ -11,7 +26,6 @@
     "context/param",
     "grace",
     "logs",
-    "orm",
     "session",
     "toolbox",
     "utils",
@@ -19,6 +33,22 @@
   pruneopts = "UT"
   revision = "053a075344c118a5cc41981b29ef612bb53d20ca"
   version = "v1.10.1"
+
+[[projects]]
+  digest = "1:0f98f59e9a2f4070d66f0c9c39561f68fcd1dc837b22a852d28d0003aebd1b1e"
+  name = "github.com/boltdb/bolt"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8"
+  version = "v1.3.1"
+
+[[projects]]
+  digest = "1:c28625428387b63dd7154eb857f51e700465cfbf7c06f619e71f2da33cefe47e"
+  name = "github.com/coreos/bbolt"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "583e8937c61f1af6513608ccc75c97b6abdf4ff9"
+  version = "v1.3.0"
 
 [[projects]]
   branch = "master"
@@ -79,6 +109,14 @@
   revision = "c126467f60eb25f8f27e5a981f32a87e3965053f"
 
 [[projects]]
+  branch = "master"
+  digest = "1:4b487c782bc804d994e91adbd3d2a8a77a482671efd87b2fde0805adb01a39c0"
+  name = "golang.org/x/sys"
+  packages = ["unix"]
+  pruneopts = "UT"
+  revision = "2b024373dcd9800f0cae693839fac6ede8d64a8c"
+
+[[projects]]
   digest = "1:342378ac4dcb378a5448dd723f0784ae519383532f5e70ade24132c4c8693202"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
@@ -90,8 +128,10 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/asdine/storm",
     "github.com/astaxie/beego",
-    "github.com/astaxie/beego/orm",
+    "github.com/boltdb/bolt",
+    "github.com/coreos/bbolt",
     "github.com/mattn/go-sqlite3",
     "github.com/smartystreets/goconvey/convey",
   ]
