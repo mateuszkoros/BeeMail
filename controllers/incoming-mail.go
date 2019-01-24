@@ -3,7 +3,6 @@ package controllers
 import (
 	"BeeMail/database"
 	"BeeMail/helpers"
-	"BeeMail/models"
 	"github.com/astaxie/beego"
 	"io"
 	"os"
@@ -15,18 +14,9 @@ type IncomingMailController struct {
 }
 
 func (c *IncomingMailController) Post() {
-	var mail models.Mail
-	var subject, message string
+	mail := helpers.CreateMailFromHttpRequest(c.Ctx.Request)
 	c.Ctx.Request.ParseMultipartForm(32 << 20)
 	file, handler, _ := c.Ctx.Request.FormFile("Attachment")
-	if len(c.Ctx.Request.Form["Subject"]) > 0 {
-		subject = c.Ctx.Request.Form["Subject"][0]
-	}
-	if len(c.Ctx.Request.Form["Message"]) > 0 {
-		message = c.Ctx.Request.Form["Message"][0]
-	}
-	mail.SetSubject(subject)
-	mail.SetMessage(message)
 	if file != nil {
 		defer file.Close()
 		filename := validateFileName(handler.Filename)
@@ -38,9 +28,9 @@ func (c *IncomingMailController) Post() {
 		io.Copy(f, file)
 	}
 	if mail.IsEmpty() {
-		c.Data["json"] = map[string]string{"Response": "Mail provided in improper format"}
+		c.Data["json"] = helpers.CreateResponse("Mail provided in improper format")
 	} else {
-		c.Data["json"] = &mail
+		c.Data["json"] = helpers.CreateResponse("Message received")
 		db := *(database.GetInstance())
 		db.Insert(&mail)
 	}
