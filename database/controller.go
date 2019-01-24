@@ -15,7 +15,7 @@ var (
 func GetInstance() *orm.Ormer {
 	once.Do(func() {
 		orm.RegisterDriver("sqlite3", orm.DRSqlite)
-		orm.RegisterDataBase("default", "sqlite3", "./messages.db")
+		orm.RegisterDataBase("default", "sqlite3", "./mails.db")
 		instance = orm.NewOrm()
 		instance.Using("default")
 		err := orm.RunSyncdb("default", false, true)

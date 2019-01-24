@@ -3,35 +3,20 @@ package controllers
 import (
 	"BeeMail/database"
 	"BeeMail/helpers"
-	"BeeMail/models"
 	"github.com/astaxie/beego"
 	"io"
 	"os"
 	"regexp"
-	"strings"
 )
 
-type IncomingMessageController struct {
+type IncomingMailController struct {
 	beego.Controller
 }
 
-func (c *IncomingMessageController) Post() {
-	var msg models.Message
-	var subject, message string
+func (c *IncomingMailController) Post() {
+	mail := helpers.CreateMailFromHttpRequest(c.Ctx.Request)
 	c.Ctx.Request.ParseMultipartForm(32 << 20)
 	file, handler, _ := c.Ctx.Request.FormFile("Attachment")
-	if len(c.Ctx.Request.Form["Subject"]) > 0 {
-		subject = c.Ctx.Request.Form["Subject"][0]
-	}
-	if len(c.Ctx.Request.Form["Message"]) > 0 {
-		message = c.Ctx.Request.Form["Message"][0]
-	}
-	if strings.TrimSpace(subject) != "" {
-		msg.Subject = subject
-	}
-	if strings.TrimSpace(message) != "" {
-		msg.Message = message
-	}
 	if file != nil {
 		defer file.Close()
 		filename := validateFileName(handler.Filename)
@@ -42,14 +27,14 @@ func (c *IncomingMessageController) Post() {
 		defer f.Close()
 		io.Copy(f, file)
 	}
-	if msg.IsEmpty() {
-		c.Data["json"] = map[string]string{"Response": "Message provided in improper format"}
+	if mail.IsEmpty() {
+		c.Data["json"] = helpers.CreateResponse("Mail provided in improper format")
 	} else {
-		c.Data["json"] = &msg
+		c.Data["json"] = helpers.CreateResponse("Message received")
 		db := *(database.GetInstance())
-		db.Insert(&msg)
+		db.Insert(&mail)
 	}
-	beego.Info("Received message:\n" + string(c.Ctx.Input.RequestBody))
+	beego.Info("Received mail:\n" + string(c.Ctx.Input.RequestBody))
 	c.ServeJSON()
 }
 
