@@ -8,7 +8,6 @@ import (
 	"io"
 	"os"
 	"regexp"
-	"strings"
 )
 
 type IncomingMessageController struct {
@@ -26,12 +25,8 @@ func (c *IncomingMessageController) Post() {
 	if len(c.Ctx.Request.Form["Message"]) > 0 {
 		message = c.Ctx.Request.Form["Message"][0]
 	}
-	if strings.TrimSpace(subject) != "" {
-		msg.Subject = subject
-	}
-	if strings.TrimSpace(message) != "" {
-		msg.Message = message
-	}
+	msg.SetSubject(subject)
+	msg.SetMessage(message)
 	if file != nil {
 		defer file.Close()
 		filename := validateFileName(handler.Filename)
