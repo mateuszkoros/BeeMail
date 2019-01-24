@@ -10,12 +10,12 @@ import (
 	"regexp"
 )
 
-type IncomingMessageController struct {
+type IncomingMailController struct {
 	beego.Controller
 }
 
-func (c *IncomingMessageController) Post() {
-	var msg models.Message
+func (c *IncomingMailController) Post() {
+	var mail models.Mail
 	var subject, message string
 	c.Ctx.Request.ParseMultipartForm(32 << 20)
 	file, handler, _ := c.Ctx.Request.FormFile("Attachment")
@@ -25,8 +25,8 @@ func (c *IncomingMessageController) Post() {
 	if len(c.Ctx.Request.Form["Message"]) > 0 {
 		message = c.Ctx.Request.Form["Message"][0]
 	}
-	msg.SetSubject(subject)
-	msg.SetMessage(message)
+	mail.SetSubject(subject)
+	mail.SetMessage(message)
 	if file != nil {
 		defer file.Close()
 		filename := validateFileName(handler.Filename)
@@ -37,14 +37,14 @@ func (c *IncomingMessageController) Post() {
 		defer f.Close()
 		io.Copy(f, file)
 	}
-	if msg.IsEmpty() {
-		c.Data["json"] = map[string]string{"Response": "Message provided in improper format"}
+	if mail.IsEmpty() {
+		c.Data["json"] = map[string]string{"Response": "Mail provided in improper format"}
 	} else {
-		c.Data["json"] = &msg
+		c.Data["json"] = &mail
 		db := *(database.GetInstance())
-		db.Insert(&msg)
+		db.Insert(&mail)
 	}
-	beego.Info("Received message:\n" + string(c.Ctx.Input.RequestBody))
+	beego.Info("Received mail:\n" + string(c.Ctx.Input.RequestBody))
 	c.ServeJSON()
 }
 

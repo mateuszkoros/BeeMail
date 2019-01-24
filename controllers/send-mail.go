@@ -10,11 +10,11 @@ import (
 	"net/url"
 )
 
-type SendMessageController struct {
+type SendMailController struct {
 	beego.Controller
 }
 
-func (c *SendMessageController) Post() {
+func (c *SendMailController) Post() {
 	destinationAddress := "http://localhost:1944"
 	response, err := http.PostForm(destinationAddress, url.Values{
 		"Subject": {"Sample subject"},
@@ -26,8 +26,8 @@ func (c *SendMessageController) Post() {
 	body, err := ioutil.ReadAll(response.Body)
 	beego.Info(string(body))
 
-	msg := models.Message{}
-	json.Unmarshal(body, &msg)
-	c.Data["json"] = msg
+	mail := models.Mail{}
+	json.Unmarshal(body, &mail)
+	c.Data["json"] = mail
 	c.ServeJSON()
 }
