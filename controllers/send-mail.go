@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"BeeMail/database"
 	"BeeMail/helpers"
 	"BeeMail/models"
 	"encoding/json"
@@ -32,7 +33,12 @@ func (c *SendMailController) Post() {
 		response, err := http.PostForm(destination, url.Values{
 			"Subject": {mail.Subject},
 			"Message": {mail.Message}})
-		helpers.CheckError(err)
+		if err != nil {
+			beego.Error("Failed to send message", err)
+			c.Data["json"] = helpers.CreateResponse("Failed to send message - " + err.Error())
+			c.ServeJSON()
+			return
+		}
 
 		receiverResponse := getResponseData(response)
 		responses = append(responses, receiverResponse)
@@ -40,6 +46,10 @@ func (c *SendMailController) Post() {
 		c.Data["json"] = receiverResponse
 		err = response.Body.Close()
 		helpers.CheckError(err)
+
+		mail.Destination = models.Outgoing
+		db := *(database.GetInstance())
+		db.Insert(&mail)
 	}
 	c.ServeJSON()
 }
