@@ -3,6 +3,7 @@ package controllers
 import (
 	"BeeMail/database"
 	"BeeMail/helpers"
+	"BeeMail/models"
 	"github.com/astaxie/beego"
 	"io"
 	"os"
@@ -15,6 +16,11 @@ type IncomingMailController struct {
 
 func (c *IncomingMailController) Post() {
 	mail := helpers.CreateMailFromHttpRequest(c.Ctx.Request)
+	if mail.IsEmpty() {
+		c.Data["json"] = helpers.CreateResponse("Mail provided in improper format")
+		c.ServeJSON()
+		return
+	}
 	c.Ctx.Request.ParseMultipartForm(32 << 20)
 	file, handler, _ := c.Ctx.Request.FormFile("Attachment")
 	if file != nil {
@@ -27,13 +33,10 @@ func (c *IncomingMailController) Post() {
 		defer f.Close()
 		io.Copy(f, file)
 	}
-	if mail.IsEmpty() {
-		c.Data["json"] = helpers.CreateResponse("Mail provided in improper format")
-	} else {
-		c.Data["json"] = helpers.CreateResponse("Message received")
-		db := *(database.GetInstance())
-		db.Insert(&mail)
-	}
+	mail.Destination = models.Incoming
+	c.Data["json"] = helpers.CreateResponse("Message received")
+	db := *(database.GetInstance())
+	db.Insert(&mail)
 	beego.Info("Received mail:\n" + string(c.Ctx.Input.RequestBody))
 	c.ServeJSON()
 }

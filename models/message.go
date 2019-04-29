@@ -6,11 +6,20 @@ import (
 	"time"
 )
 
+type MailDestination string
+
+const (
+	Outgoing = "Outgoing"
+	Incoming = "Incoming"
+)
+
 type Mail struct {
-	Id        uint      `json:"id" orm:"pk;auto"`
-	Subject   string    `json:"subject"`
-	Message   string    `json:"message"`
-	Timestamp time.Time `json:"timestamp" orm:"auto_now_add;type(datetime)"`
+	Id            uint            `json:"id" orm:"pk;auto"`
+	Subject       string          `json:"subject"`
+	Message       string          `json:"message"`
+	Destination   MailDestination `json:"destination"`
+	RemoteAddress string          `json:"remoteaddress"`
+	Timestamp     time.Time       `json:"timestamp" orm:"auto_now_add;type(datetime)"`
 }
 
 func init() {
@@ -32,5 +41,13 @@ func (m *Mail) SetMessage(message string) {
 	trimmedMessage := strings.TrimSpace(message)
 	if trimmedMessage != "" {
 		m.Message = trimmedMessage
+	}
+}
+
+func (m *Mail) SetRemoteAddress(address string) {
+	trimmedAddress := strings.TrimSpace(address)
+	trimmedAddress = strings.Split(trimmedAddress, ":")[0]
+	if trimmedAddress != "" {
+		m.RemoteAddress = trimmedAddress
 	}
 }

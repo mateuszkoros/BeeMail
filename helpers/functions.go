@@ -15,6 +15,11 @@ func CheckError(err error) {
 
 func CreateMailFromHttpRequest(request *http.Request) models.Mail {
 	m := models.Mail{}
+	m.SetRemoteAddress(request.RemoteAddr)
+	// if there is no remote address in request return empty mail, signalling that request is invalid
+	if m.RemoteAddress == "" {
+		return m
+	}
 	if len(request.Form["Subject"]) > 0 {
 		m.SetSubject(request.Form["Subject"][0])
 	}
