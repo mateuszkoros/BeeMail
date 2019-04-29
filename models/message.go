@@ -3,12 +3,14 @@ package models
 import (
 	"github.com/astaxie/beego/orm"
 	"strings"
+	"time"
 )
 
 type Mail struct {
-	Id      uint   `json:"id" orm:"pk;auto"`
-	Subject string `json:"subject"`
-	Message string `json:"message"`
+	Id        uint      `json:"id" orm:"pk;auto"`
+	Subject   string    `json:"subject"`
+	Message   string    `json:"message"`
+	Timestamp time.Time `json:"timestamp" orm:"auto_now_add;type(datetime)"`
 }
 
 func init() {
