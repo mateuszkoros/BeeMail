@@ -21,6 +21,12 @@ func (c *IncomingMailController) Post() {
 		c.ServeJSON()
 		return
 	}
+	mail.SetRemoteAddress(c.Ctx.Request.RemoteAddr)
+	if mail.RemoteAddress == "" {
+		c.Data["json"] = helpers.CreateResponse("Mail provided in improper format")
+		c.ServeJSON()
+		return
+	}
 	c.Ctx.Request.ParseMultipartForm(32 << 20)
 	file, handler, _ := c.Ctx.Request.FormFile("Attachment")
 	if file != nil {
@@ -33,7 +39,7 @@ func (c *IncomingMailController) Post() {
 		defer f.Close()
 		io.Copy(f, file)
 	}
-	mail.Destination = models.Incoming
+	mail.Type = models.Incoming
 	c.Data["json"] = helpers.CreateResponse("Message received")
 	db := *(database.GetInstance())
 	db.Insert(&mail)
@@ -44,8 +50,6 @@ func (c *IncomingMailController) Post() {
 // remove potentially harmful characters from filename
 func validateFileName(fileName string) string {
 	validator, err := regexp.Compile(`[*\\/"\[\]:;|=,&]`)
-	if err != nil {
-		helpers.CheckError(err)
-	}
+	helpers.CheckError(err)
 	return validator.ReplaceAllString(fileName, "")
 }

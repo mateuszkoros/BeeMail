@@ -15,7 +15,6 @@ type SendMailController struct {
 	beego.Controller
 }
 
-// TODO add sent messages to database
 func (c *SendMailController) Post() {
 	if len(c.Ctx.Request.Form["Destination"]) == 0 {
 		c.Data["json"] = helpers.CreateResponse("Please specify destination address")
@@ -47,7 +46,8 @@ func (c *SendMailController) Post() {
 		err = response.Body.Close()
 		helpers.CheckError(err)
 
-		mail.Destination = models.Outgoing
+		mail.Type = models.Outgoing
+		mail.SetRemoteAddress(destination)
 		db := *(database.GetInstance())
 		db.Insert(&mail)
 	}

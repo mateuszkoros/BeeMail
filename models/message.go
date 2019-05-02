@@ -2,11 +2,12 @@ package models
 
 import (
 	"github.com/astaxie/beego/orm"
+	"regexp"
 	"strings"
 	"time"
 )
 
-type MailDestination string
+type MailType string
 
 const (
 	Outgoing = "Outgoing"
@@ -14,12 +15,12 @@ const (
 )
 
 type Mail struct {
-	Id            uint            `json:"id" orm:"pk;auto"`
-	Subject       string          `json:"subject"`
-	Message       string          `json:"message"`
-	Destination   MailDestination `json:"destination"`
-	RemoteAddress string          `json:"remoteaddress"`
-	Timestamp     time.Time       `json:"timestamp" orm:"auto_now_add;type(datetime)"`
+	Id            uint      `json:"id" orm:"pk;auto"`
+	Subject       string    `json:"subject"`
+	Message       string    `json:"message"`
+	Type          MailType  `json:"type"`
+	RemoteAddress string    `json:"remoteaddress"`
+	Timestamp     time.Time `json:"timestamp" orm:"auto_now_add;type(datetime)"`
 }
 
 func init() {
@@ -45,8 +46,12 @@ func (m *Mail) SetMessage(message string) {
 }
 
 func (m *Mail) SetRemoteAddress(address string) {
-	trimmedAddress := strings.TrimSpace(address)
-	trimmedAddress = strings.Split(trimmedAddress, ":")[0]
+	validator, err := regexp.Compile(`^(.*://)|(:.*)$`)
+	if err != nil {
+		return
+	}
+	trimmedAddress := validator.ReplaceAllString(address, "")
+	trimmedAddress = strings.TrimSpace(address)
 	if trimmedAddress != "" {
 		m.RemoteAddress = trimmedAddress
 	}
