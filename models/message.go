@@ -15,7 +15,7 @@ const (
 )
 
 type Mail struct {
-	Id            uint      `json:"id" orm:"pk;auto"`
+	Id            uint      `json:"-" orm:"pk;auto"`
 	Subject       string    `json:"subject"`
 	Message       string    `json:"message"`
 	Type          MailType  `json:"type"`
@@ -51,7 +51,7 @@ func (m *Mail) SetRemoteAddress(address string) {
 		return
 	}
 	trimmedAddress := validator.ReplaceAllString(address, "")
-	trimmedAddress = strings.TrimSpace(address)
+	trimmedAddress = strings.TrimSpace(trimmedAddress)
 	if trimmedAddress != "" {
 		m.RemoteAddress = trimmedAddress
 	}
