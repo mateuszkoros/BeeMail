@@ -29,7 +29,8 @@ func (c *SendMailController) Post() {
 	}
 	var responses []models.ReceiverResponse
 	for _, destination := range c.Ctx.Request.Form["Destination"] {
-		response, err := http.PostForm(destination, url.Values{
+		fullUrl := "http://" + destination + ":1944"
+		response, err := http.PostForm(fullUrl, url.Values{
 			"Subject": {mail.Subject},
 			"Message": {mail.Message}})
 		if err != nil {

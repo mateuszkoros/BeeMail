@@ -40,7 +40,7 @@ func (c *IncomingMailController) Post() {
 		io.Copy(f, file)
 	}
 	mail.Type = models.Incoming
-	c.Data["json"] = helpers.CreateResponse("Message received")
+	c.Data["json"] = helpers.CreateResponse("OK")
 	db := *(database.GetInstance())
 	db.Insert(&mail)
 	beego.Info("Received mail:\n" + string(c.Ctx.Input.RequestBody))
