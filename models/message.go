@@ -15,7 +15,7 @@ const (
 )
 
 type Mail struct {
-	Id            uint      `json:"-" orm:"pk;auto"`
+	Id            uint      `json:"id" orm:"pk;auto"`
 	Subject       string    `json:"subject"`
 	Message       string    `json:"message"`
 	Type          MailType  `json:"type"`
