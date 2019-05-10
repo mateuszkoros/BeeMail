@@ -73,7 +73,7 @@ func createCertificate() ([]byte, *rsa.PrivateKey, *rsa.PublicKey) {
 }
 
 func savePublicKey(certificateBytes []byte) {
-	CheckError(os.Mkdir(cryptographyDirectory, 0700))
+	CheckError(os.MkdirAll(cryptographyDirectory, 0700))
 	certificateFile, err := os.Create(certFileName)
 	CheckError(err)
 	CheckError(pem.Encode(certificateFile, &pem.Block{Type: "CERTIFICATE", Bytes: certificateBytes}))
@@ -82,7 +82,7 @@ func savePublicKey(certificateBytes []byte) {
 }
 
 func savePrivateKey(privateKey *rsa.PrivateKey) {
-	CheckError(os.Mkdir(cryptographyDirectory, 0700))
+	CheckError(os.MkdirAll(cryptographyDirectory, 0700))
 	keyFile, err := os.OpenFile(keyFileName, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 	CheckError(err)
 	CheckError(pem.Encode(keyFile, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(privateKey)}))
