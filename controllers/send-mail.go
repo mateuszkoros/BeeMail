@@ -5,6 +5,7 @@ import (
 	"BeeMail/helpers"
 	"BeeMail/models"
 	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"github.com/astaxie/beego"
 	"io/ioutil"
@@ -30,9 +31,14 @@ func (c *SendMailController) Post() {
 		return
 	}
 	var responses []models.ReceiverResponse
+	certPool := x509.NewCertPool()
+	certPool.AddCert(helpers.GetRootCA())
 	httpClient := &http.Client{Transport: &http.Transport{
-		TLSClientConfig: &tls.Config{ServerName: "BeeMail"},
+		TLSClientConfig: &tls.Config{
+			ServerName: "BeeMail",
+			RootCAs:    certPool},
 	}}
+
 	for _, destination := range c.Ctx.Request.Form["Destination"] {
 		fullUrl := "https://" + destination + ":1944"
 		response, err := httpClient.PostForm(fullUrl, url.Values{

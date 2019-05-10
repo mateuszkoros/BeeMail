@@ -30,8 +30,11 @@ func CreateResponse(text string) *models.ReceiverResponse {
 }
 
 func CheckIfFileExists(path string) bool {
-	if _, err := os.Stat(path); os.IsNotExist(err) {
+	if _, err := os.Stat(path); err == nil {
+		return true
+	} else if os.IsNotExist(err) {
 		return false
+	} else {
+		panic("Cannot determine whether file exists")
 	}
-	return true
 }
