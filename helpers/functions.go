@@ -4,6 +4,7 @@ import (
 	"BeeMail/models"
 	"github.com/astaxie/beego"
 	"net/http"
+	"os"
 )
 
 func CheckError(err error) {
@@ -26,4 +27,11 @@ func CreateMailFromHttpRequest(request *http.Request) models.Mail {
 
 func CreateResponse(text string) *models.ReceiverResponse {
 	return &models.ReceiverResponse{Response: text}
+}
+
+func CheckIfFileExists(path string) bool {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return false
+	}
+	return true
 }

@@ -30,7 +30,7 @@ func (c *SendMailController) Post() {
 	}
 	var responses []models.ReceiverResponse
 	for _, destination := range c.Ctx.Request.Form["Destination"] {
-		fullUrl := "http://" + destination + ":1944"
+		fullUrl := "https://" + destination + ":1944"
 		response, err := http.PostForm(fullUrl, url.Values{
 			"Subject": {strings.TrimSpace(mail.Subject)},
 			"Message": {strings.TrimSpace(mail.Message)}})
@@ -51,7 +51,10 @@ func (c *SendMailController) Post() {
 		mail.Type = models.Outgoing
 		mail.SetRemoteAddress(destination)
 		db := *(database.GetInstance())
-		db.Insert(&mail)
+		_, err = db.Insert(&mail)
+		if err != nil {
+			beego.Error("Failed to insert message to database", err)
+		}
 	}
 	c.ServeJSON()
 }
