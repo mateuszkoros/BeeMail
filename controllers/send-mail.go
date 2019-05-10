@@ -4,6 +4,7 @@ import (
 	"BeeMail/database"
 	"BeeMail/helpers"
 	"BeeMail/models"
+	"crypto/tls"
 	"encoding/json"
 	"github.com/astaxie/beego"
 	"io/ioutil"
@@ -29,9 +30,12 @@ func (c *SendMailController) Post() {
 		return
 	}
 	var responses []models.ReceiverResponse
+	httpClient := &http.Client{Transport: &http.Transport{
+		TLSClientConfig: &tls.Config{ServerName: "BeeMail"},
+	}}
 	for _, destination := range c.Ctx.Request.Form["Destination"] {
 		fullUrl := "https://" + destination + ":1944"
-		response, err := http.PostForm(fullUrl, url.Values{
+		response, err := httpClient.PostForm(fullUrl, url.Values{
 			"Subject": {strings.TrimSpace(mail.Subject)},
 			"Message": {strings.TrimSpace(mail.Message)}})
 		if err != nil {

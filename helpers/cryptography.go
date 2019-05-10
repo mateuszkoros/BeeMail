@@ -46,6 +46,7 @@ func generateRandomBigNumber() *big.Int {
 func createCertificateAuthority() *x509.Certificate {
 	ca := &x509.Certificate{
 		SerialNumber:          generateRandomBigNumber(),
+		DNSNames:              []string{"BeeMail"},
 		NotBefore:             time.Now(),
 		NotAfter:              time.Now().AddDate(10, 0, 0),
 		IsCA:                  true,
