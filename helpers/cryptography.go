@@ -3,22 +3,20 @@ package helpers
 import (
 	"crypto/rand"
 	"crypto/rsa"
-	"crypto/tls"
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
 	"github.com/astaxie/beego"
 	"math/big"
 	"os"
-	"sync"
 	"time"
 )
 
 var (
-	certificateAuthority  *x509.Certificate
-	once                  sync.Once
-	rootCACert            = "conf/rootCA.crt"
-	rootCAKey             = "conf/rootCA.key"
+	// certificateAuthority  *x509.Certificate
+	// once                  sync.Once
+	// rootCACert            = "conf/rootCA.crt"
+	// rootCAKey             = "conf/rootCA.key"
 	cryptographyDirectory = "cryptography"
 	certFileName          = cryptographyDirectory + "/BeeMail.crt"
 	keyFileName           = cryptographyDirectory + "/BeeMail.key"
@@ -32,19 +30,20 @@ func CreateCertificateIfNotExists() {
 	}
 }
 
-func GetRootCA() *x509.Certificate {
-	once.Do(func() {
-		authorityKeyPair, err := tls.LoadX509KeyPair(rootCACert, rootCAKey)
-		CheckError(err)
-		certificateAuthority, err = x509.ParseCertificate(authorityKeyPair.Certificate[0])
-		CheckError(err)
-	})
-	if certificateAuthority != nil {
-		return certificateAuthority
-	} else {
-		panic("Failed to get certificate authority")
-	}
-}
+//
+// func GetRootCA() *x509.Certificate {
+// 	once.Do(func() {
+// 		authorityKeyPair, err := tls.LoadX509KeyPair(rootCACert, rootCAKey)
+// 		CheckError(err)
+// 		certificateAuthority, err = x509.ParseCertificate(authorityKeyPair.Certificate[0])
+// 		CheckError(err)
+// 	})
+// 	if certificateAuthority != nil {
+// 		return certificateAuthority
+// 	} else {
+// 		panic("Failed to get certificate authority")
+// 	}
+// }
 
 func generateRandomBigNumber() *big.Int {
 	randomNumber, err := rand.Int(rand.Reader, big.NewInt(1024))
@@ -53,7 +52,7 @@ func generateRandomBigNumber() *big.Int {
 }
 
 func createCertificate() ([]byte, *rsa.PrivateKey, *rsa.PublicKey) {
-	GetRootCA()
+	// GetRootCA()
 	certificate := &x509.Certificate{
 		SerialNumber: generateRandomBigNumber(),
 		Subject: pkix.Name{
@@ -67,7 +66,7 @@ func createCertificate() ([]byte, *rsa.PrivateKey, *rsa.PublicKey) {
 	}
 	privateKey, _ := rsa.GenerateKey(rand.Reader, 2048)
 	publicKey := &privateKey.PublicKey
-	certificateBytes, err := x509.CreateCertificate(rand.Reader, certificate, certificateAuthority, publicKey, privateKey)
+	certificateBytes, err := x509.CreateCertificate(rand.Reader, certificate, certificate, publicKey, privateKey)
 	CheckError(err)
 	return certificateBytes, privateKey, publicKey
 }
