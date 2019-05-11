@@ -13,10 +13,6 @@ import (
 )
 
 var (
-	// certificateAuthority  *x509.Certificate
-	// once                  sync.Once
-	// rootCACert            = "conf/rootCA.crt"
-	// rootCAKey             = "conf/rootCA.key"
 	cryptographyDirectory = "cryptography"
 	certFileName          = cryptographyDirectory + "/BeeMail.crt"
 	keyFileName           = cryptographyDirectory + "/BeeMail.key"
@@ -30,21 +26,6 @@ func CreateCertificateIfNotExists() {
 	}
 }
 
-//
-// func GetRootCA() *x509.Certificate {
-// 	once.Do(func() {
-// 		authorityKeyPair, err := tls.LoadX509KeyPair(rootCACert, rootCAKey)
-// 		CheckError(err)
-// 		certificateAuthority, err = x509.ParseCertificate(authorityKeyPair.Certificate[0])
-// 		CheckError(err)
-// 	})
-// 	if certificateAuthority != nil {
-// 		return certificateAuthority
-// 	} else {
-// 		panic("Failed to get certificate authority")
-// 	}
-// }
-
 func generateRandomBigNumber() *big.Int {
 	randomNumber, err := rand.Int(rand.Reader, big.NewInt(1024))
 	CheckError(err)
@@ -52,7 +33,6 @@ func generateRandomBigNumber() *big.Int {
 }
 
 func createCertificate() ([]byte, *rsa.PrivateKey, *rsa.PublicKey) {
-	// GetRootCA()
 	certificate := &x509.Certificate{
 		SerialNumber: generateRandomBigNumber(),
 		Subject: pkix.Name{

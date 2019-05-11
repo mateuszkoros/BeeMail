@@ -30,14 +30,10 @@ func (c *SendMailController) Post() {
 		return
 	}
 	var responses []models.ReceiverResponse
-	// certPool := x509.NewCertPool()
-	// certPool.AddCert(helpers.GetRootCA())
 	httpClient := &http.Client{Transport: &http.Transport{
 		TLSClientConfig: &tls.Config{
 			InsecureSkipVerify: true,
 		},
-		// ServerName: "BeeMail",
-		// RootCAs:    certPool},
 	}}
 
 	for _, destination := range c.Ctx.Request.Form["Destination"] {
