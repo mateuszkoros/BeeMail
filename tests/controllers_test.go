@@ -17,7 +17,8 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func TestGetAddresses(t *testing.T) {
+func TestGetEmptyAddresses(t *testing.T) {
+	cleanUp()
 	r, _ := http.NewRequest("GET", "/addresses", nil)
 	w := httptest.NewRecorder()
 	beego.BeeApp.Handlers.ServeHTTP(w, r)
@@ -28,10 +29,14 @@ func TestGetAddresses(t *testing.T) {
 		Convey("Status Code Should Be 200", func() {
 			So(w.Code, ShouldEqual, 200)
 		})
+		Convey("The Result Should Be Empty", func() {
+			So(w.Body.String(), ShouldEqual, "null")
+		})
 	})
 }
 
-func TestGetMessages(t *testing.T) {
+func TestGetEmptyMessages(t *testing.T) {
+	cleanUp()
 	r, _ := http.NewRequest("GET", "/get", nil)
 	w := httptest.NewRecorder()
 	beego.BeeApp.Handlers.ServeHTTP(w, r)
@@ -41,6 +46,9 @@ func TestGetMessages(t *testing.T) {
 	Convey("Subject: Test Station Endpoint\n", t, func() {
 		Convey("Status Code Should Be 200", func() {
 			So(w.Code, ShouldEqual, 200)
+		})
+		Convey("The Result Should Be Empty", func() {
+			So(w.Body.String(), ShouldEqual, "[]")
 		})
 	})
 }
