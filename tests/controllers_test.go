@@ -14,6 +14,8 @@ import (
 	"testing"
 )
 
+var testAddress = "10.10.10.10"
+
 func TestMain(m *testing.M) {
 	code := m.Run()
 	cleanUp()
@@ -21,14 +23,11 @@ func TestMain(m *testing.M) {
 }
 
 func TestGetEmptyAddresses(t *testing.T) {
-	cleanUp()
 	r, _ := http.NewRequest("GET", "/addresses", nil)
 	w := httptest.NewRecorder()
 	beego.BeeApp.Handlers.ServeHTTP(w, r)
 
-	beego.Trace("testing", "TestBeego", "Code[%d]\n%s", w.Code, w.Body.String())
-
-	Convey("Subject: Test Station Endpoint\n", t, func() {
+	Convey("Subject: Test Getting Addresses From Empty Database\n", t, func() {
 		Convey("Status Code Should Be 200", func() {
 			So(w.Code, ShouldEqual, 200)
 		})
@@ -39,14 +38,11 @@ func TestGetEmptyAddresses(t *testing.T) {
 }
 
 func TestGetEmptyMessages(t *testing.T) {
-	cleanUp()
 	r, _ := http.NewRequest("GET", "/get", nil)
 	w := httptest.NewRecorder()
 	beego.BeeApp.Handlers.ServeHTTP(w, r)
 
-	beego.Trace("testing", "TestBeego", "Code[%d]\n%s", w.Code, w.Body.String())
-
-	Convey("Subject: Test Station Endpoint\n", t, func() {
+	Convey("Subject: Test Getting Messages From Empty Database\n", t, func() {
 		Convey("Status Code Should Be 200", func() {
 			So(w.Code, ShouldEqual, 200)
 		})
@@ -57,27 +53,53 @@ func TestGetEmptyMessages(t *testing.T) {
 }
 
 func TestGetAddressesAfterMessageReceived(t *testing.T) {
-	cleanUp()
-	addressToInsert := "10.10.10.10"
-	mail := models.Mail{Type: models.Incoming, RemoteAddress: addressToInsert}
-	db := *(database.GetInstance())
-	_, err := db.Insert(&mail)
+	insertMessageToDatabase(t)
 	r, _ := http.NewRequest("GET", "/addresses", nil)
 	w := httptest.NewRecorder()
 	beego.BeeApp.Handlers.ServeHTTP(w, r)
 
-	beego.Trace("testing", "TestBeego", "Code[%d]\n%s", w.Code, w.Body.String())
-
-	Convey("Subject: Test Station Endpoint\n", t, func() {
-		Convey("Database insertion should be successful", func() {
-			So(err, ShouldBeNil)
-		})
+	Convey("Subject: Test Getting Addresses\n", t, func() {
 		Convey("Status Code Should Be 200", func() {
 			So(w.Code, ShouldEqual, 200)
 		})
 		Convey("The Result Should Not Be Empty", func() {
-			So(w.Body.String(), ShouldEqual, fmt.Sprintf("[\"%s\"]", addressToInsert))
+			So(w.Body.String(), ShouldEqual, fmt.Sprintf("[\"%s\"]", testAddress))
 		})
+	})
+	purgeDatabaseAfterInsertion(t)
+}
+
+func TestGetMessagesAfterMessageReceived(t *testing.T) {
+	insertMessageToDatabase(t)
+	r, _ := http.NewRequest("GET", fmt.Sprintf("/get?address=%s", testAddress), nil)
+	w := httptest.NewRecorder()
+	beego.BeeApp.Handlers.ServeHTTP(w, r)
+
+	Convey("Subject: Test Getting Messages\n", t, func() {
+		Convey("Status Code Should Be 200", func() {
+			So(w.Code, ShouldEqual, 200)
+		})
+		Convey("The Result Should Not Be Empty", func() {
+			So(w.Body.String(), ShouldNotEqual, "[]")
+		})
+	})
+	purgeDatabaseAfterInsertion(t)
+}
+
+func insertMessageToDatabase(t *testing.T) {
+	mail := models.Mail{Type: models.Incoming, RemoteAddress: testAddress}
+	db := *(database.GetInstance())
+	_, err := db.Insert(&mail)
+	Convey("Subject: Test Message Insertion\n", t, func() {
+		So(err, ShouldBeNil)
+	})
+}
+
+func purgeDatabaseAfterInsertion(t *testing.T) {
+	db := *(database.GetInstance())
+	_, err := db.Delete(&models.Mail{Id: 1})
+	Convey("Subject: Test Message Deletion\n", t, func() {
+		So(err, ShouldBeNil)
 	})
 }
 
