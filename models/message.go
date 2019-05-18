@@ -1,6 +1,7 @@
 package models
 
 import (
+	"BeeMail/helpers"
 	"github.com/astaxie/beego/orm"
 	"regexp"
 	"strings"
@@ -56,5 +57,27 @@ func (m *Mail) SetRemoteAddress(address string) {
 	trimmedAddress = strings.TrimSpace(trimmedAddress)
 	if trimmedAddress != "" {
 		m.RemoteAddress = trimmedAddress
+	}
+}
+
+func (m *Mail) SetAttachmentName(name string) {
+	trimmedName := strings.TrimSpace(name)
+	trimmedName = validateFileName(trimmedName)
+	if trimmedName != "" {
+		m.AttachmentName = trimmedName
+	}
+}
+
+// remove potentially harmful characters from filename
+func validateFileName(fileName string) string {
+	validator, err := regexp.Compile(`[*\\/"\[\]:;|=,&]`)
+	helpers.CheckError(err)
+	return validator.ReplaceAllString(fileName, "")
+}
+
+func (m *Mail) SetAttachment(encodedAttachment string) {
+	trimmedEncodedAttachment := strings.TrimSpace(encodedAttachment)
+	if trimmedEncodedAttachment != "" {
+		m.Attachment = trimmedEncodedAttachment
 	}
 }

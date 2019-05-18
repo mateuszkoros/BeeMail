@@ -22,6 +22,12 @@ func CreateMailFromHttpRequest(request *http.Request) models.Mail {
 	if len(request.Form["Message"]) > 0 {
 		m.SetMessage(request.Form["Message"][0])
 	}
+	if len(request.Form["AttachmentName"]) > 0 {
+		m.SetAttachmentName(request.Form["AttachmentName"][0])
+	}
+	if len(request.Form["Attachment"]) > 0 {
+		m.SetAttachment(request.Form["Attachment"][0])
+	}
 	return m
 }
 
