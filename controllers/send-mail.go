@@ -39,8 +39,10 @@ func (c *SendMailController) Post() {
 	for _, destination := range c.Ctx.Request.Form["Destination"] {
 		fullUrl := "https://" + destination + ":1944"
 		response, err := httpClient.PostForm(fullUrl, url.Values{
-			"Subject": {strings.TrimSpace(mail.Subject)},
-			"Message": {strings.TrimSpace(mail.Message)}})
+			"Subject":        {strings.TrimSpace(mail.Subject)},
+			"Message":        {strings.TrimSpace(mail.Message)},
+			"AttachmentName": {strings.TrimSpace(mail.AttachmentName)},
+			"Attachment":     {strings.TrimSpace(mail.Message)}})
 		if err != nil {
 			beego.Error("Failed to send message", err)
 			c.Data["json"] = helpers.CreateResponse("Failed to send message - " + err.Error())
