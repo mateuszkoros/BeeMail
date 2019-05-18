@@ -15,12 +15,14 @@ const (
 )
 
 type Mail struct {
-	Id            uint      `json:"id" orm:"pk;auto"`
-	Subject       string    `json:"subject"`
-	Message       string    `json:"message"`
-	Type          MailType  `json:"type"`
-	RemoteAddress string    `json:"remoteaddress"`
-	Timestamp     time.Time `json:"timestamp" orm:"auto_now_add;type(datetime)"`
+	Id             uint      `json:"id" orm:"pk;auto"`
+	Subject        string    `json:"subject"`
+	Message        string    `json:"message"`
+	Type           MailType  `json:"type"`
+	RemoteAddress  string    `json:"remoteaddress"`
+	AttachmentName string    `json:"attachmentname"`
+	Attachment     string    `json:"attachment"`
+	Timestamp      time.Time `json:"timestamp" orm:"auto_now_add;type(datetime)"`
 }
 
 func init() {
