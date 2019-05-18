@@ -1,6 +1,7 @@
 package models
 
 import (
+	"BeeMail/helpers"
 	"github.com/astaxie/beego/orm"
 	"regexp"
 	"strings"
@@ -15,12 +16,14 @@ const (
 )
 
 type Mail struct {
-	Id            uint      `json:"id" orm:"pk;auto"`
-	Subject       string    `json:"subject"`
-	Message       string    `json:"message"`
-	Type          MailType  `json:"type"`
-	RemoteAddress string    `json:"remoteaddress"`
-	Timestamp     time.Time `json:"timestamp" orm:"auto_now_add;type(datetime)"`
+	Id             uint      `json:"id" orm:"pk;auto"`
+	Subject        string    `json:"subject"`
+	Message        string    `json:"message"`
+	Type           MailType  `json:"type"`
+	RemoteAddress  string    `json:"remoteaddress"`
+	AttachmentName string    `json:"attachmentname"`
+	Attachment     string    `json:"attachment"`
+	Timestamp      time.Time `json:"timestamp" orm:"auto_now_add;type(datetime)"`
 }
 
 func init() {
@@ -54,5 +57,27 @@ func (m *Mail) SetRemoteAddress(address string) {
 	trimmedAddress = strings.TrimSpace(trimmedAddress)
 	if trimmedAddress != "" {
 		m.RemoteAddress = trimmedAddress
+	}
+}
+
+func (m *Mail) SetAttachmentName(name string) {
+	trimmedName := strings.TrimSpace(name)
+	trimmedName = validateFileName(trimmedName)
+	if trimmedName != "" {
+		m.AttachmentName = trimmedName
+	}
+}
+
+// remove potentially harmful characters from filename
+func validateFileName(fileName string) string {
+	validator, err := regexp.Compile(`[*\\/"\[\]:;|=,&]`)
+	helpers.CheckError(err)
+	return validator.ReplaceAllString(fileName, "")
+}
+
+func (m *Mail) SetAttachment(encodedAttachment string) {
+	trimmedEncodedAttachment := strings.TrimSpace(encodedAttachment)
+	if trimmedEncodedAttachment != "" {
+		m.Attachment = trimmedEncodedAttachment
 	}
 }

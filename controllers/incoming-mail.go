@@ -5,9 +5,6 @@ import (
 	"BeeMail/helpers"
 	"BeeMail/models"
 	"github.com/astaxie/beego"
-	"io"
-	"os"
-	"regexp"
 )
 
 type IncomingMailController struct {
@@ -27,29 +24,11 @@ func (c *IncomingMailController) Post() {
 		c.ServeJSON()
 		return
 	}
-	c.Ctx.Request.ParseMultipartForm(32 << 20)
-	file, handler, _ := c.Ctx.Request.FormFile("Attachment")
-	if file != nil {
-		defer file.Close()
-		filename := validateFileName(handler.Filename)
-		f, err := os.Create("./" + filename)
-		if err != nil {
-			beego.Warn(err)
-		}
-		defer f.Close()
-		io.Copy(f, file)
-	}
 	mail.Type = models.Incoming
 	c.Data["json"] = helpers.CreateResponse("OK")
 	db := *(database.GetInstance())
-	db.Insert(&mail)
+	_, err := db.Insert(&mail)
+	helpers.CheckError(err)
 	beego.Info("Received mail:\n" + string(c.Ctx.Input.RequestBody))
 	c.ServeJSON()
-}
-
-// remove potentially harmful characters from filename
-func validateFileName(fileName string) string {
-	validator, err := regexp.Compile(`[*\\/"\[\]:;|=,&]`)
-	helpers.CheckError(err)
-	return validator.ReplaceAllString(fileName, "")
 }
