@@ -5,6 +5,8 @@ import (
 	"github.com/astaxie/beego"
 	"net/http"
 	"os"
+	"regexp"
+	"strings"
 )
 
 func CheckError(err error) {
@@ -43,4 +45,17 @@ func CheckIfFileExists(path string) bool {
 	} else {
 		panic("Cannot determine whether file exists")
 	}
+}
+
+func CheckIfLocalAddress(address string) bool {
+	validator, err := regexp.Compile(`^(.*://)|(:.*)$`)
+	if err != nil {
+		return false
+	}
+	trimmedAddress := validator.ReplaceAllString(address, "")
+	trimmedAddress = strings.TrimSpace(trimmedAddress)
+	if trimmedAddress == "127.0.0.1" {
+		return true
+	}
+	return false
 }

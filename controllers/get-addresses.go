@@ -12,6 +12,11 @@ type GetAddressesController struct {
 }
 
 func (c *GetAddressesController) Get() {
+	if !helpers.CheckIfLocalAddress(c.Ctx.Request.RemoteAddr) {
+		c.Data["json"] = helpers.CreateResponse("Unauthorized")
+		c.ServeJSON()
+		return
+	}
 	db := *(database.GetInstance())
 	var addressesMap []orm.Params
 	_, err := db.QueryTable("mail").Distinct().Values(&addressesMap, "remote_address")

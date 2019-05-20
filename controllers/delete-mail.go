@@ -13,6 +13,11 @@ type DeleteMailController struct {
 }
 
 func (c *DeleteMailController) Delete() {
+	if !helpers.CheckIfLocalAddress(c.Ctx.Request.RemoteAddr) {
+		c.Data["json"] = helpers.CreateResponse("Unauthorized")
+		c.ServeJSON()
+		return
+	}
 	db := *(database.GetInstance())
 	if len(c.Ctx.Request.Form["Id"]) == 0 {
 		c.Data["json"] = helpers.CreateResponse("Please specify message to delete")

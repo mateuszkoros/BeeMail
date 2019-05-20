@@ -18,6 +18,11 @@ type SendMailController struct {
 }
 
 func (c *SendMailController) Post() {
+	if !helpers.CheckIfLocalAddress(c.Ctx.Request.RemoteAddr) {
+		c.Data["json"] = helpers.CreateResponse("Unauthorized")
+		c.ServeJSON()
+		return
+	}
 	if len(c.Ctx.Request.Form["Destination"]) == 0 {
 		c.Data["json"] = helpers.CreateResponse("Please specify destination address")
 		c.ServeJSON()
