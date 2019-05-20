@@ -1,7 +1,7 @@
 package models
 
 import (
-	"BeeMail/helpers"
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"regexp"
 	"strings"
@@ -71,7 +71,10 @@ func (m *Mail) SetAttachmentName(name string) {
 // remove potentially harmful characters from filename
 func validateFileName(fileName string) string {
 	validator, err := regexp.Compile(`[*\\/"\[\]:;|=,&]`)
-	helpers.CheckError(err)
+	if err != nil {
+		beego.Emergency(err)
+		panic(err)
+	}
 	return validator.ReplaceAllString(fileName, "")
 }
 
