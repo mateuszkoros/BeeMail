@@ -3,9 +3,9 @@ package helpers
 import (
 	"BeeMail/models"
 	"github.com/astaxie/beego"
+	"net"
 	"net/http"
 	"os"
-	"regexp"
 	"strings"
 )
 
@@ -48,14 +48,8 @@ func CheckIfFileExists(path string) bool {
 }
 
 func CheckIfLocalAddress(address string) bool {
-	validator, err := regexp.Compile(`^(.*://)|(:.*)$`)
-	if err != nil {
-		return false
-	}
-	trimmedAddress := validator.ReplaceAllString(address, "")
-	trimmedAddress = strings.TrimSpace(trimmedAddress)
-	if trimmedAddress == "127.0.0.1" {
-		return true
-	}
-	return false
+	addressArray := strings.Split(address, ":")
+	address = strings.Join(addressArray[:len(addressArray)-1], ":")
+	parsedIp := net.ParseIP(address)
+	return parsedIp.IsLoopback()
 }
