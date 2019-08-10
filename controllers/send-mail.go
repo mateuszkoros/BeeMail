@@ -17,6 +17,8 @@ type SendMailController struct {
 	beego.Controller
 }
 
+// Send mail endpoint accepts new messages and sends them to specified address.
+// It only accepts connections from localhost.
 func (c *SendMailController) Post() {
 	if !helpers.CheckIfLocalAddress(c.Ctx.Request.RemoteAddr) {
 		c.Data["json"] = helpers.CreateResponse("Unauthorized")

@@ -12,6 +12,8 @@ type DeleteMailController struct {
 	beego.Controller
 }
 
+// Delete endpoint accepts Id of a message and attempts to delete it from database.
+// It only accepts connections from localhost.
 func (c *DeleteMailController) Delete() {
 	if !helpers.CheckIfLocalAddress(c.Ctx.Request.RemoteAddr) {
 		c.Data["json"] = helpers.CreateResponse("Unauthorized")

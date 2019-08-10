@@ -12,6 +12,7 @@ var (
 	once     sync.Once
 )
 
+// GetInstance method returns connection to local database.
 func GetInstance() *orm.Ormer {
 	once.Do(func() {
 		orm.RegisterDriver("sqlite3", orm.DRSqlite)

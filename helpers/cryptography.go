@@ -18,6 +18,8 @@ var (
 	keyFileName           = cryptographyDirectory + "/BeeMail.key"
 )
 
+// CreateCertificateIfNotExists checks if user certificate has been created before.
+// If there is no certificate it creates a new one.
 func CreateCertificateIfNotExists() {
 	if !CheckIfFileExists(certFileName) || !CheckIfFileExists(keyFileName) {
 		certificateBytes, privateKey, _ := createCertificate()
@@ -26,12 +28,14 @@ func CreateCertificateIfNotExists() {
 	}
 }
 
+// generateRandomBigNumber is used to create a serial number for a new certificate.
 func generateRandomBigNumber() *big.Int {
 	randomNumber, err := rand.Int(rand.Reader, big.NewInt(1024))
 	CheckError(err)
 	return randomNumber
 }
 
+// createCertificate creates a new certificate and returns private and public key.
 func createCertificate() ([]byte, *rsa.PrivateKey, *rsa.PublicKey) {
 	certificate := &x509.Certificate{
 		SerialNumber: generateRandomBigNumber(),
@@ -51,6 +55,7 @@ func createCertificate() ([]byte, *rsa.PrivateKey, *rsa.PublicKey) {
 	return certificateBytes, privateKey, publicKey
 }
 
+// savePublicKey stores newly generated public key on disk.
 func savePublicKey(certificateBytes []byte) {
 	CheckError(os.MkdirAll(cryptographyDirectory, 0700))
 	certificateFile, err := os.Create(certFileName)
@@ -60,6 +65,7 @@ func savePublicKey(certificateBytes []byte) {
 	beego.Info("Created new cert file " + certFileName)
 }
 
+// savePrivateKey stores newly generated private key on disk,
 func savePrivateKey(privateKey *rsa.PrivateKey) {
 	CheckError(os.MkdirAll(cryptographyDirectory, 0700))
 	keyFile, err := os.OpenFile(keyFileName, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)

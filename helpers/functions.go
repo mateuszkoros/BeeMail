@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+// CheckError is a helper function that logs a fatal error and exits application.
 func CheckError(err error) {
 	if err != nil {
 		beego.Emergency(err)
@@ -16,6 +17,8 @@ func CheckError(err error) {
 	}
 }
 
+// CreateMailFromHttpRequest creates Message object from HTTP request's
+// Subject, Message, AttachmentName and Attachment field.
 func CreateMailFromHttpRequest(request *http.Request) models.Mail {
 	m := models.Mail{}
 	if len(request.Form["Subject"]) > 0 {
@@ -33,10 +36,13 @@ func CreateMailFromHttpRequest(request *http.Request) models.Mail {
 	return m
 }
 
+// CreateResponse is a helper function for creating HTTP response containing specified message.
 func CreateResponse(text string) *models.ReceiverResponse {
 	return &models.ReceiverResponse{Response: text}
 }
 
+// CheckIfFileExists checks whether file exists on disk.
+// It causes application to panic if it cannot unequivocally determine file's existence.
 func CheckIfFileExists(path string) bool {
 	if _, err := os.Stat(path); err == nil {
 		return true
@@ -47,6 +53,8 @@ func CheckIfFileExists(path string) bool {
 	}
 }
 
+// CheckIfLocalAddress checks if request came from localhost.
+// It is used by endpoints accepting only local requests.
 func CheckIfLocalAddress(address string) bool {
 	addressArray := strings.Split(address, ":")
 	address = strings.Join(addressArray[:len(addressArray)-1], ":")

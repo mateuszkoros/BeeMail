@@ -12,6 +12,8 @@ type GetMailsController struct {
 	beego.Controller
 }
 
+// Get mails endpoint accepts address and returns history of communication with it.
+// It only accepts connections from localhost.
 func (c *GetMailsController) Get() {
 	if !helpers.CheckIfLocalAddress(c.Ctx.Request.RemoteAddr) {
 		c.Data["json"] = helpers.CreateResponse("Unauthorized")

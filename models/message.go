@@ -15,6 +15,7 @@ const (
 	Incoming = "Incoming"
 )
 
+// Mail struct is an object representing sent and received messages in database.
 type Mail struct {
 	Id             uint      `json:"id" orm:"pk;auto"`
 	Subject        string    `json:"subject"`
@@ -68,7 +69,8 @@ func (m *Mail) SetAttachmentName(name string) {
 	}
 }
 
-// remove potentially harmful characters from filename
+// validateFileName removes potentially harmful characters from filename.
+// It is used in order to prevent malicious attachments from replacing system files.
 func validateFileName(fileName string) string {
 	validator, err := regexp.Compile(`[*\\/"\[\]:;|=,&]`)
 	if err != nil {

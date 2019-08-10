@@ -11,6 +11,8 @@ type GetAddressesController struct {
 	beego.Controller
 }
 
+// Get addresses endpoint takes no arguments and returns a list of addresses user has communicated with.
+// It only accepts connections from localhost.
 func (c *GetAddressesController) Get() {
 	if !helpers.CheckIfLocalAddress(c.Ctx.Request.RemoteAddr) {
 		c.Data["json"] = helpers.CreateResponse("Unauthorized")

@@ -11,6 +11,7 @@ type IncomingMailController struct {
 	beego.Controller
 }
 
+// Incoming mail endpoint accepts new messages and saves them in database.
 func (c *IncomingMailController) Post() {
 	mail := helpers.CreateMailFromHttpRequest(c.Ctx.Request)
 	if mail.IsEmpty() {
